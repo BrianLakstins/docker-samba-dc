@@ -153,6 +153,11 @@ config() {
 
 appSetup () {
   ARGS_SAMBA_TOOL=()
+  # Using NFS volumes, getting error "ERROR(<class 'samba.provision.ProvisioningError'>): Provision failed - ProvisioningError: Your filesystem or build does not support posix ACLs, which s3fs requires.  Try the mounting the filesystem with the 'acl' option."
+  # Found: https://www.golinuxhub.com/2014/05/your-filesystem-or-build-does-not/
+  # Tried: ARGS_SAMBA_TOOL+=("--use-interactive --use-ntvfs")
+  # gives different error - samba-tool domain provision: error: no such option: --use-interactive --use-ntvfs
+  # fix was to use local volume drive instead of NFS with custom mount point - https://stackoverflow.com/questions/39496564/docker-volume-custom-mount-point
   ARGS_SAMBA_TOOL+=("--dns-backend=SAMBA_INTERNAL")
   ARGS_SAMBA_TOOL+=("--option=add group script=/usr/sbin/groupadd %g")
   if ! grep 'Domain-Computer' /etc/group ; then /usr/sbin/groupadd Domain-Computer ; fi
